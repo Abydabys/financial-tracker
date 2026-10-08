@@ -2,10 +2,11 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { categories } from '../data/demoData'
+import { toLocalDate } from '../utils/date'
 import { useFinance } from '../context/FinanceContext'
 export default function TransactionModal({ transaction, onClose }) {
   const { accounts, addTransaction, updateTransaction } = useFinance()
-  const [form, setForm] = useState(transaction ? { ...transaction, amount: String(transaction.amount) } : { name: '', amount: '', type: 'expense', category: 'Food', accountId: accounts[0]?.id || '', date: new Date().toISOString().slice(0, 10), note: '' })
+  const [form, setForm] = useState(transaction ? { ...transaction, amount: String(transaction.amount) } : { name: '', amount: '', type: 'expense', category: 'Food', accountId: accounts[0]?.id || '', date: toLocalDate(), note: '' })
   const [error, setError] = useState('')
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value })
   const submit = (e) => {

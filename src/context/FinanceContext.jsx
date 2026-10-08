@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, useCallback, useEffect, useState } from 'react'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { demoData } from '../data/demoData'
+import { toLocalDate } from '../utils/date'
 import { calculateBalance, calculateIncome, calculateExpenses, calculateRemainingBudget, calculateCategorySpending, calculateFinancialScore } from '../utils/finance'
 const FinanceContext = createContext(null)
 export const useFinance = () => useContext(FinanceContext)
@@ -53,7 +54,20 @@ export function FinanceProvider({ children }) {
     setSettings(demoData.settings)
     showToast('Demo data restored')
   }, [setAccounts, setTransactions, setBudgets, setGoals, setRecurring, setSettings, showToast])
-  const month = new Date().toISOString().slice(0, 7)
+  const clearAll = useCallback(() => {
+    setAccounts([])
+    setTransactions([])
+    setBudgets({})
+    setGoals([])
+    setRecurring([])
+    showToast('All data cleared')
+  }, [setAccounts, setTransactions, setBudgets, setGoals, setRecurring, showToast])
+  const processRecurring = useCallback((r) => {
+    const accountId = accounts.find((a) => a.id === r.accountId)?.id || accounts[0]?.id
+    if (!accountId) return showToast('Add an account first')
+    addTransaction({ name: r.name, amount: r.amount, type: r.type, category: r.category, accountId, date: toLocalDate(), note: 'Recurring' })
+  }, [accounts, addTransaction, showToast])
+  const month = toLocalDate().slice(0, 7)
   const stats = useMemo(() => {
     const income = calculateIncome(transactions, month)
     const expenses = calculateExpenses(transactions, month)
@@ -67,6 +81,6 @@ export function FinanceProvider({ children }) {
       score: calculateFinancialScore({ income, expenses, monthlyBudget: settings.monthlyBudget, budgets, spending, goals, recurring })
     }
   }, [accounts, transactions, budgets, goals, recurring, settings.monthlyBudget, month])
-  const value = { accounts, transactions, budgets, goals, recurring, settings, setSettings, stats, toast, addTransaction, updateTransaction, deleteTransaction, resetDemo }
+  const value = { accounts, setAccounts, transactions, setTransactions, budgets, setBudgets, goals, setGoals, recurring, setRecurring, settings, setSettings, stats, toast, showToast, addTransaction, updateTransaction, deleteTransaction, processRecurring, resetDemo, clearAll }
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>
 }

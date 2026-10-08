@@ -7,7 +7,10 @@ import TransactionModal from './components/TransactionModal'
 import Home from './pages/Home'
 import Transactions from './pages/Transactions'
 import Profile from './pages/Profile'
-import ComingSoon from './pages/ComingSoon'
+import Statistics from './pages/Statistics'
+import Goals from './pages/Goals'
+import Budgets from './pages/Budgets'
+import Recurring from './pages/Recurring'
 import { useFinance } from './context/FinanceContext'
 export default function App() {
   const location = useLocation()
@@ -22,8 +25,10 @@ export default function App() {
             <Routes location={location}>
               <Route path="/" element={<Home />} />
               <Route path="/transactions" element={<Transactions />} />
-              <Route path="/statistics" element={<ComingSoon title="Statistics" />} />
-              <Route path="/goals" element={<ComingSoon title="Goals" />} />
+              <Route path="/statistics" element={<Statistics />} />
+              <Route path="/goals" element={<Goals />} />
+              <Route path="/budgets" element={<Budgets />} />
+              <Route path="/recurring" element={<Recurring />} />
               <Route path="/profile" element={<Profile />} />
             </Routes>
           </motion.div>

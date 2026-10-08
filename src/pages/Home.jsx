@@ -4,10 +4,11 @@ import ProgressBar from '../components/ProgressBar'
 import FinancialScore from '../components/FinancialScore'
 import TransactionItem from '../components/TransactionItem'
 import EmptyState from '../components/EmptyState'
+import BudgetCard from '../components/BudgetCard'
 import { useFinance } from '../context/FinanceContext'
 import { formatMoney } from '../utils/finance'
 export default function Home() {
-  const { transactions, accounts, settings, stats } = useFinance()
+  const { transactions, accounts, settings, stats, budgets } = useFinance()
   const cur = settings.currency
   const pct = settings.monthlyBudget ? Math.round((stats.expenses / settings.monthlyBudget) * 100) : 0
   const recent = [...transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5)
@@ -29,6 +30,11 @@ export default function Home() {
         <Card><p className="muted small">Expenses this month</p><strong className="neg">{formatMoney(stats.expenses, cur)}</strong></Card>
       </div>
       <FinancialScore {...stats.score} />
+      <div className="row between">
+        <h3>Category budgets</h3>
+        <Link to="/budgets" className="link">Manage</Link>
+      </div>
+      {Object.keys(budgets).length === 0 ? <Card><EmptyState text="No budgets set yet." /></Card> : Object.keys(budgets).map((c) => <BudgetCard key={c} category={c} spent={stats.spending[c] || 0} limit={budgets[c]} currency={cur} />)}
       <Card>
         <div className="row between">
           <h3>Recent transactions</h3>
